@@ -1,5 +1,6 @@
 package com.bm.arcgis_sample.presentation.map_view.view_model
 
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.geometry.GeometryEngine
@@ -18,8 +19,11 @@ import com.bm.arcgis_sample.domain.utill.ScreenState
 import com.bm.arcgis_sample.presentation.map_view.state.UiStateMapScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
@@ -37,6 +41,9 @@ class MapViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UiStateMapScreen())
     val uiState = _uiState.asStateFlow()
     var addressResponse : DtoReverseGeocodeResponse? = null
+
+    private val _showMessage : MutableSharedFlow<String> = MutableSharedFlow()
+    val showMessage = _showMessage.asSharedFlow()
 
     val mapViewProxy = MapViewProxy()
 
@@ -68,7 +75,7 @@ class MapViewModel @Inject constructor(
 
     fun navigateToCurrentLocation() {
         viewModelScope.launch {
-            _uiState.value.currentLocation?.let { mapViewProxy.setViewpoint(it) }
+            locationDisplay.setAutoPanMode(LocationDisplayAutoPanMode.Recenter)
         }
     }
 
@@ -77,7 +84,6 @@ class MapViewModel @Inject constructor(
             viewModelScope.launch {
                 val latLng = GeometryEngine.projectOrNull(point, SpatialReference.wgs84()) as Point
                 _uiState.update { it.copy(latLng = latLng) }
-                println("${latLng.y},${latLng.x}")
                 repositoryRemoteGeoCode.fetchAddressFromReverseGeocode(latLng)
                     .collectLatest {
                         when(it){
@@ -118,6 +124,8 @@ class MapViewModel @Inject constructor(
         addressResponse?.let {
             viewModelScope.launch(Dispatchers.IO) {
                 repositoryLocalSavedAddress.saveAddress(it.toDbAddressModel())
+                 closeCallout()
+                _showMessage.emit("Saved!")
             }
         }
     }

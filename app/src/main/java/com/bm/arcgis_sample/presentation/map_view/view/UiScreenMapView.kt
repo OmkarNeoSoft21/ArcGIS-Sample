@@ -1,12 +1,14 @@
 package com.bm.arcgis_sample.presentation.map_view.view
 
 import android.Manifest
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Close
+import androidx.compose.material.icons.twotone.GpsFixed
 import androidx.compose.material.icons.twotone.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +32,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,6 +53,7 @@ import com.meticha.permissions_compose.rememberAppPermissionState
 @Composable
 fun UiScreenMapView(mapViewModel : MapViewModel = hiltViewModel()) {
     val uiState by mapViewModel.uiState.collectAsStateWithLifecycle()
+    val showMessage by mapViewModel.showMessage.collectAsStateWithLifecycle("")
     val permissions = rememberAppPermissionState(permissions = listOf(
             AppPermission(
                 permission = Manifest.permission.ACCESS_FINE_LOCATION,
@@ -64,12 +70,19 @@ fun UiScreenMapView(mapViewModel : MapViewModel = hiltViewModel()) {
     val map = remember { createMap() }
 
     val navController = LocalNavController.current
+    val context = LocalContext.current
 
-    LaunchedEffect(true) {
-        if (permissions.allRequiredGranted())
-            mapViewModel.locationDisplay.dataSource.start()
-        else
-            permissions.requestPermission()
+    LaunchedEffect(showMessage) {
+        if (showMessage.isNotEmpty()){
+            Toast.makeText(context , showMessage , Toast.LENGTH_SHORT ).show()
+        }
+    }
+
+    LaunchedEffect(permissions.allRequiredGranted()) {
+        mapViewModel.locationDisplay.dataSource.start()
+    }
+    LaunchedEffect(!permissions.allRequiredGranted()) {
+        permissions.requestPermission()
     }
 
     Scaffold(
@@ -77,20 +90,30 @@ fun UiScreenMapView(mapViewModel : MapViewModel = hiltViewModel()) {
             CustomToolbar("Map View")
         }
     ) {
-        if (permissions.allRequiredGranted()) {
-            MapView(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-                arcGISMap = map,
-                mapViewProxy = mapViewModel.mapViewProxy,
-                locationDisplay = mapViewModel.locationDisplay,
-                graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
-                onSingleTapConfirmed = { event ->
-                    mapViewModel.onMapClick(event)
-                },
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+        Box {
+            if (permissions.allRequiredGranted()) {
+                MapView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
+                    arcGISMap = map,
+                    mapViewProxy = mapViewModel.mapViewProxy,
+                    locationDisplay = mapViewModel.locationDisplay,
+                    graphicsOverlays = listOf(mapViewModel.graphicsOverlay),
+                    onSingleTapConfirmed = { event ->
+                        mapViewModel.onMapClick(event)
+                    },
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.TopCenter)
+                            .background(Color.White)
+                            .padding(5.dp),
+                        textAlign = TextAlign.Center,
+                        text = "Tap anywhere to see information and save your favourite address.",
+                        style = MaterialTheme.typography.labelSmall
+                    )
                     uiState.latLng?.let{ point ->
                         Callout(
                             modifier = Modifier.sizeIn(maxWidth = 250.dp),
@@ -125,6 +148,7 @@ fun UiScreenMapView(mapViewModel : MapViewModel = hiltViewModel()) {
                                         modifier = Modifier.align(Alignment.CenterHorizontally).wrapContentSize(),
                                         onClick = {
                                             mapViewModel.saveAddress()
+
                                         }
                                     ) {
                                         Text(
@@ -136,33 +160,36 @@ fun UiScreenMapView(mapViewModel : MapViewModel = hiltViewModel()) {
                             }
                         }
                     }
-                    Icon(
-                        modifier = Modifier
-                            .padding(bottom = 50.dp, end = 20.dp)
-                            .align(Alignment.BottomEnd)
-                            .background(color = Color.White, shape = CircleShape)
-                            .size(40.dp)
-                            .clickable {
-                                mapViewModel.navigateToCurrentLocation()
-                            },
-                        imageVector = Icons.TwoTone.Place, contentDescription = ""
-                    )
-
-                    Button(
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .padding(bottom = 50.dp , start = 20.dp)
-                            .align(Alignment.BottomStart),
-                        onClick = {
-                            navController.navigate(Route.SavedAddress)
-                        }
-                    ) {
-                        Text(
-                            text = "View Saved Address",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
                 }
+            }
+
+
+
+            Icon(
+                modifier = Modifier
+                    .padding(bottom = 50.dp, end = 20.dp)
+                    .align(Alignment.BottomEnd)
+                    .background(color = Color.White, shape = CircleShape)
+                    .size(40.dp)
+                    .clickable {
+                        mapViewModel.navigateToCurrentLocation()
+                    },
+                imageVector = Icons.TwoTone.GpsFixed, contentDescription = ""
+            )
+
+            Button(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(bottom = 50.dp , start = 20.dp)
+                    .align(Alignment.BottomStart),
+                onClick = {
+                    navController.navigate(Route.SavedAddress)
+                }
+            ) {
+                Text(
+                    text = "View Saved Address",
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }

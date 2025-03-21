@@ -19,7 +19,7 @@ interface ApiService {
 }
 
 object Webservice {
-    private const val WS_GET_REVERSE_GEOCODE_API = "/reverseGeocode?"
+    private const val WS_GET_REVERSE_GEOCODE_API = "reverseGeocode?"
 
     fun getReverseCodeApiUrl(location: Point): String {
         return buildString {
@@ -32,7 +32,7 @@ object Webservice {
 }
 
 object NetworkClient {
-    private const val BASE_URL_GEOCODE = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+    private const val BASE_URL_GEOCODE = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/"
 
     private val logger by lazy {
         HttpLoggingInterceptor().apply {
