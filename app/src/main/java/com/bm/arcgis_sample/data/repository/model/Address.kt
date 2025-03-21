@@ -1,0 +1,32 @@
+package com.bm.arcgis_sample.data.repository.model
+
+data class Address(
+    val AddNum: String? = null,
+    val Addr_type: String? = null,
+    val Address: String? = null,
+    val Block: String? = null,
+    val City: String? = null,
+    val CntryName: String? = null,
+    val CountryCode: String? = null,
+    val District: String? = null,
+    val InputX: Double? = null,
+    val InputY: Double? = null,
+    val LongLabel: String? = null,
+    val Match_addr: String? = null,
+    val MetroArea: String? = null,
+    val Neighborhood: String? = null,
+    val PlaceName: String? = null,
+    val Postal: String? = null,
+    val PostalExt: String? = null,
+    val Region: String? = null,
+    val RegionAbbr: String? = null,
+    val Sector: String? = null,
+    val ShortLabel: String? = null,
+    val StrucDet: String? = null,
+    val StrucType: String? = null,
+    val Subregion: String? = null,
+    val Territory: String? = null,
+    val Type: String? = null,
+    val X: Double? = null,
+    val Y: Double? = null
+)
