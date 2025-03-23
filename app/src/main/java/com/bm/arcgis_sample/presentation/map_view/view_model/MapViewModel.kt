@@ -88,7 +88,9 @@ class MapViewModel @Inject constructor(
                         clear()
                         it.forEach {
                             val point  = GeometryEngine.projectOrNull(Point(it.long.toDouble(), it.lat.toDouble()), SpatialReference.wgs84()) as Point
-                            add(Graphic(point,pinSymbol))
+                            val graphic = Graphic(point,pinSymbol)
+                            //graphic.attributes["data"] = it
+                            add(graphic)
                         }
                     }
                 }
