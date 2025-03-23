@@ -6,17 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,7 +39,6 @@ import com.bm.arcgis_sample.presentation.map_view.view.UiScreenMapView
 import com.bm.arcgis_sample.presentation.saved_address.view.UiScreenSavedAddress
 import com.bm.arcgis_sample.ui.theme.DisplayAMap
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 
 val LocalNavController =
@@ -66,9 +60,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             DisplayAMap {
                 Surface {
-                    val isConnected = networkObserver.isConnectedFlow.collectAsStateWithLifecycle(true)
+                    val isConnected =
+                        networkObserver.isConnectedFlow.collectAsStateWithLifecycle(true)
                     val navController = rememberNavController()
-                    if(isConnected.value){
+                    if (isConnected.value) {
                         CompositionLocalProvider(LocalNavController provides navController) {
                             NavHost(
                                 navController = navController,
@@ -84,7 +79,7 @@ class MainActivity : ComponentActivity() {
 
                             }
                         }
-                    }else{
+                    } else {
                         NoInternetScreen()
                     }
 

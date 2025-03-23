@@ -21,12 +21,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CustomToolbar(
     title: String,
-    isBackArrow:Boolean = false,
+    isBackArrow: Boolean = false,
     topAppBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors().copy(
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface
     ),
-    onBackClick:(()->Unit) ?= null
+    onBackClick: (() -> Unit)? = null
 ) {
     TopAppBar(
         modifier = Modifier
@@ -34,7 +34,7 @@ fun CustomToolbar(
             .shadow(elevation = 5.dp),
         colors = topAppBarColors,
         navigationIcon = {
-            AnimatedVisibility(isBackArrow){
+            AnimatedVisibility(isBackArrow) {
                 Icon(
                     modifier = Modifier.clickable {
                         onBackClick?.invoke()

@@ -22,9 +22,7 @@ object AppModule {
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return androidx.room.Room.databaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java,
-            "arcgis.db"
+            context.applicationContext, AppDatabase::class.java, "arcgis.db"
         ).fallbackToDestructiveMigration().build()
     }
 

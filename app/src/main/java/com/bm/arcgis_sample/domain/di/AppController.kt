@@ -10,7 +10,7 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class AppController : Application() {
-    companion object{
+    companion object {
         lateinit var instance: AppController
     }
 

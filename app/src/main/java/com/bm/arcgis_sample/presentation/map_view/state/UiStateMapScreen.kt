@@ -4,9 +4,9 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.Viewpoint
 
 data class UiStateMapScreen(
-    val isLoading:Boolean = false,
-    val latLng : Point ?= null,
-    val title : String = "",
-    val layerName :String = "",
-    val currentLocation : Viewpoint?= null
+    val isLoading: Boolean = false,
+    val latLng: Point? = null,
+    val title: String = "",
+    val layerName: String = "",
+    val currentLocation: Viewpoint? = null
 )

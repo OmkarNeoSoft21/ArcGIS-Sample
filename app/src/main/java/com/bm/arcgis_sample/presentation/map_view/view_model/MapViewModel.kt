@@ -35,15 +35,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val repositoryRemoteGeoCode : RemoteDataSourceGeocode,
-    private val repositoryLocalSavedAddress : LocalDataSourceSavedAddress,
+    private val repositoryRemoteGeoCode: RemoteDataSourceGeocode,
+    private val repositoryLocalSavedAddress: LocalDataSourceSavedAddress,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiStateMapScreen())
     val uiState = _uiState.asStateFlow()
-    var addressResponse : DtoReverseGeocodeResponse? = null
+    var addressResponse: DtoReverseGeocodeResponse? = null
 
-    private val _showMessage : MutableSharedFlow<String> = MutableSharedFlow(1, 1, BufferOverflow.DROP_LATEST)
+    private val _showMessage: MutableSharedFlow<String> =
+        MutableSharedFlow(1, 1, BufferOverflow.DROP_LATEST)
     val showMessage = _showMessage.asSharedFlow()
 
     val mapViewProxy = MapViewProxy()
@@ -66,7 +67,7 @@ class MapViewModel @Inject constructor(
     }
 
 
-    private fun showMarkers(){
+    private fun showMarkers() {
         viewModelScope.launch {
             repositoryLocalSavedAddress.getAllAddress()
                 .asFlow()
@@ -74,8 +75,13 @@ class MapViewModel @Inject constructor(
                     graphicsOverlay.graphics.apply {
                         clear()
                         it.forEach {
-                            val point  = GeometryEngine.projectOrNull(Point(it.long.toDouble(), it.lat.toDouble()), SpatialReference.wgs84()) as Point
-                            val graphic = Graphic(point,pinSymbol)
+                            val point = GeometryEngine.projectOrNull(
+                                Point(
+                                    it.long.toDouble(),
+                                    it.lat.toDouble()
+                                ), SpatialReference.wgs84()
+                            ) as Point
+                            val graphic = Graphic(point, pinSymbol)
                             //graphic.attributes["data"] = it
                             add(graphic)
                         }
@@ -100,17 +106,19 @@ class MapViewModel @Inject constructor(
                 _uiState.update { it.copy(latLng = latLng) }
                 repositoryRemoteGeoCode.fetchAddressFromReverseGeocode(latLng)
                     .collectLatest {
-                        when(it){
+                        when (it) {
                             is ScreenState.Error -> {
                                 _uiState.update {
                                     it.copy(isLoading = false)
                                 }
                             }
+
                             ScreenState.Loading -> {
                                 _uiState.update {
                                     it.copy(isLoading = true)
                                 }
                             }
+
                             is ScreenState.Success<*> -> {
                                 addressResponse = it.data as DtoReverseGeocodeResponse
                                 _uiState.update {
@@ -131,14 +139,14 @@ class MapViewModel @Inject constructor(
     }
 
     fun closeCallout() {
-       _uiState.update { it.copy(latLng = null) }
+        _uiState.update { it.copy(latLng = null) }
     }
 
     fun saveAddress() {
         addressResponse?.let {
             viewModelScope.launch(Dispatchers.IO) {
                 repositoryLocalSavedAddress.saveAddress(it.toDbAddressModel())
-                 closeCallout()
+                closeCallout()
                 _showMessage.emit("Saved!")
             }
         }

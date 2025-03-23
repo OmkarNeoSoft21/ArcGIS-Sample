@@ -18,13 +18,13 @@ import com.bm.arcgis_sample.presentation.saved_address.view_model.SavedAddressVi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UiScreenSavedAddress(
-    viewModel:SavedAddressViewModel = hiltViewModel()
-){
+    viewModel: SavedAddressViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
     Scaffold(
         topBar = {
-            CustomToolbar("Saved Address" , isBackArrow = true){
+            CustomToolbar("Saved Address", isBackArrow = true) {
                 navController.navigateUp()
             }
         }
@@ -32,7 +32,7 @@ fun UiScreenSavedAddress(
         LazyColumn(
             modifier = Modifier.padding(padding)
         ) {
-            items(uiState.savedAddressList){
+            items(uiState.savedAddressList) {
                 SavedAddressListItem(it)
             }
         }

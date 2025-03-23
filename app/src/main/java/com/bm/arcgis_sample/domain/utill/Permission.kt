@@ -27,7 +27,10 @@ object Permission {
     fun isNotificationCanAccess(activity: Activity) =
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
-                ActivityCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                ActivityCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
 
             else ->
                 true
@@ -48,6 +51,7 @@ object Permission {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
                 activity.isPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+
             else -> {
                 activity.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
@@ -74,6 +78,7 @@ object Permission {
                     activity,
                     Manifest.permission.READ_MEDIA_IMAGES
                 ) == PackageManager.PERMISSION_GRANTED
+
             else -> {
                 ActivityCompat.checkSelfPermission(
                     activity,
@@ -198,14 +203,20 @@ object Permission {
         ) {
             ActivityCompat.requestPermissions(
                 activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
                 LOCATION_REQUEST_CODE
             )
         } else {
             // No explanation needed, we can request the permission.
             ActivityCompat.requestPermissions(
                 activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
                 LOCATION_REQUEST_CODE
             )
         }
@@ -240,8 +251,11 @@ object Permission {
         alert.show()
     }
 
-    private fun Context.isPermissionGranted(permission:String) : Boolean{
-        return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    private fun Context.isPermissionGranted(permission: String): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }
 
